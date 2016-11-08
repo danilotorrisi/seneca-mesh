@@ -193,8 +193,12 @@ function mesh (options) {
         function transport_listen (msg, done) {
           this.prior(msg, function (err, out) {
             if (err) return done(err)
-
-            join(this, out, function () {
+            
+            // This is a fix for amqp-transport support. Because this.prior does return
+            // an undefined out parameter, we make sure that we give the right config 
+            // object to the join function otherwise it won't work at all.
+            var config = out || msg.config
+            join(this, config, function () {
               done()
             })
           })
